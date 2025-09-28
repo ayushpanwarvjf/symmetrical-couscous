@@ -13,7 +13,7 @@ def home():
 
 @app.route("/send_phone", methods=["POST"])
 def send_phone():
-    api_id = request.form["api_id"]
+    api_id = int(request.form["api_id"])
     api_hash = request.form["api_hash"]
     phone = request.form["phone"]
 
@@ -56,7 +56,7 @@ def api_chats():
 
     async def fetch_chats():
         dialogs = await client.get_dialogs()
-        return [{"id": d.id, "name": d.name} for d in dialogs]
+        return [{"id": d.id, "name": d.name or "Unnamed"} for d in dialogs]
 
     data = client.loop.run_until_complete(fetch_chats())
     return jsonify(data)
@@ -68,7 +68,7 @@ def api_messages(chat_id):
 
     async def fetch_messages():
         msgs = await client.get_messages(chat_id, limit=20)
-        return [{"from": m.sender_id, "text": m.text} for m in msgs]
+        return [{"from": m.sender_id, "text": m.text or ""} for m in msgs]
 
     data = client.loop.run_until_complete(fetch_messages())
     return jsonify(data)
